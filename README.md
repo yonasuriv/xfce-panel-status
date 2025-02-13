@@ -1,13 +1,10 @@
 # XFCE Panel Status Indicators
 
-This repository contains two scripts designed to be used with the XFCE panel as status indicators:
-
-- **xfce4-panel-update.sh** – Reports the number of package updates available.
-- ***-upgrade.sh** (e.g. `kali_upgrade.sh`) – Compares your currently installed Kali version against the latest release available online.
+This repository contains scripts designed to be used with the XFCE panel as status indicators:
 
 > **Note:** These scripts are tailored for Kali Linux. Ensure that your system is running Kali/debian (or adjust the scripts as needed).
->
-> ![IUpdates display](https://github.com/user-attachments/assets/d1965136-95a2-4bcb-9e66-4e028648e6f7)
+
+![Updates Notification](https://github.com/user-attachments/assets/9b606657-1d48-48eb-b2f0-c2bba2e48508)
 
 ## Installation
 
