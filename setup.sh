@@ -4,10 +4,10 @@
 # wire them into the running Xfce panel as genmon (Generic Monitor) items.
 #
 # Usage:
-#   setup.sh install     [--all | --only <script> ...] [--load]
-#   setup.sh uninstall   [--all | --only <script> ...] [--unload]
-#   setup.sh load        [--all | --only <script> ...]
-#   setup.sh unload      [--all | --only <script> ...]
+#   setup.sh install     [--all | --only <script> ...] [--target <path>] [--load]
+#   setup.sh uninstall   [--all | --only <script> ...] [--target <path>] [--unload]
+#   setup.sh load        [--all | --only <script> ...] [--target <path>]
+#   setup.sh unload      [--all | --only <script> ...] [--target <path>]
 #   setup.sh help
 #
 #   install    copies the selected script(s) from ./kali-themes to the install
@@ -20,6 +20,10 @@
 #              (no file changes).
 #   --all      select every script found in ./kali-themes (the default).
 #   --only     select a single script (name with or without the .sh suffix).
+#   --target   deploy into the given full (absolute) path instead of the
+#              default /usr/share/kali-themes.  Takes precedence over the
+#              KALI_THEMES_INSTALL_DIR environment variable.  Load/unload use
+#              it as the genmon command path too.
 #   --load     convenience: as install, but also wire items into the panel.
 #   --unload   convenience: as uninstall, but also remove items from the panel.
 #
@@ -446,7 +450,7 @@ found_on_any_panel() { # plugin-id
 
 if (($# == 0)); then usage 1; fi
 
-CMD="" MODE="all" LOAD=0 UNLOAD=0 SELECTED=()
+CMD="" MODE="all" LOAD=0 UNLOAD=0 SELECTED=() TARGET=""
 while (($#)); do
   case "$1" in
     install|uninstall|load|unload)
@@ -459,6 +463,11 @@ while (($#)); do
       (($#)) || die "--only requires a script name"
       SELECTED+=("$1"); MODE="only"
       ;;
+    --target)
+      shift
+      (($#)) || die "--target requires a full path"
+      TARGET="$1"
+      ;;
     --load)   LOAD=1 ;;
     --unload) UNLOAD=1 ;;
     help|-h|--help) usage 0 ;;
@@ -466,6 +475,11 @@ while (($#)); do
   esac
   shift
 done
+
+if [[ -n "$TARGET" ]]; then
+  [[ "$TARGET" == /* ]] || die "--target requires a full (absolute) path, got '$TARGET'"
+  INSTALL_DIR="${TARGET%/}"
+fi
 
 [[ -n "$CMD" ]] || die "Missing command (run 'setup.sh help')"
 if [[ "$LOAD" == "1" ]]; then
