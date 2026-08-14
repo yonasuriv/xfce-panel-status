@@ -185,7 +185,7 @@ install_scripts() {
     info "Installed $f -> $INSTALL_DIR/$f (mode 755)"
 
     # apply the standard genmon settings to any plugin already using this script
-    local id; id="$(plugin_for_script "$INSTALL_DIR/$f")" || true
+    local id; id="$(plugin_for_script "$INSTALL_DIR/$f" "$SCRIPTS_SRC/$f")" || true
     if [[ -n "$id" ]]; then
       configure_genmon_plugin "$id" "$INSTALL_DIR/$f" \
         || warn "Could not update settings of existing genmon plugin $id"
@@ -237,15 +237,30 @@ panel_compatible() {
   return 0
 }
 
-plugin_for_script() { # command path -> plugin id
-  local cmdpath="$1" id name
+plugin_for_script() { # command path [script source path] -> plugin id
+  local cmdpath="$1" srcpath="$2" id name item base srchash itemhash
+  base="$(basename "$cmdpath")"
+  srchash="$(script_hash "$srcpath")"
   for id in $(all_plugin_ids); do
     name="$(xget "/plugins/plugin-$id")"
     [[ "$name" == "genmon" ]] || continue
-    [[ "$(xget "/plugins/plugin-$id/command")" == "$cmdpath" ]] && { echo "$id"; return 0; }
+    item="$(xget "/plugins/plugin-$id/command")"
+    [[ -n "$item" ]] || continue
+    # an exact command match is always this script's item
+    if [[ "$item" == "$cmdpath" ]]; then echo "$id"; return 0; fi
+    # otherwise reuse an item whose command is the same script *name* and whose
+    # installed copy is byte-identical to our source (prevents duplicates when
+    # the same script is deployed under a different --target path).
+    [[ "${item##*/}" == "$base" ]] || continue
+    if [[ -n "$srchash" ]]; then
+      itemhash="$(script_hash "$item")"
+      [[ -n "$itemhash" && "$itemhash" == "$srchash" ]] && { echo "$id"; return 0; }
+    fi
   done
   return 1
 }
+
+script_hash() { sha256sum "$1" 2>/dev/null | awk '{print $1}'; }
 
 next_plugin_id() {
   local m=0 id
@@ -319,7 +334,7 @@ panel_load() { # script names to load
   local -a created=() appended=() loaded_ids=()
   for target in "$@"; do
     cmdpath="$INSTALL_DIR/$target"
-    pid="$(plugin_for_script "$cmdpath")" || pid=""
+    pid="$(plugin_for_script "$cmdpath" "$SCRIPTS_SRC/$target")" || pid=""
     if [[ -n "$pid" ]]; then
       configure_genmon_plugin "$pid" "$cmdpath" \
         || { warn "Failed to configure existing plugin $pid for $target"; continue; }
@@ -340,7 +355,7 @@ panel_load() { # script names to load
   # verify every selected script is wired up as expected, otherwise roll back
   local bad=0 id
   for target in "$@"; do
-    pid="$(plugin_for_script "$INSTALL_DIR/$target")" || pid=""
+    pid="$(plugin_for_script "$INSTALL_DIR/$target" "$SCRIPTS_SRC/$target")" || pid=""
     [[ -n "$pid" ]] || { warn "Verification failed: no genmon item for $target"; bad=1; continue; }
     found_in_panel "$panel" "$pid" || { warn "Verification failed: item $pid not on $panel"; bad=1; continue; }
     [[ "$(xget "/plugins/plugin-$pid")" == "genmon" ]]            || { warn "Verification failed: $pid is not a genmon item"; bad=1; }
@@ -404,7 +419,7 @@ panel_unload() {
   local -a unloaded=()
   before="$(all_plugin_ids)"
   for target in "$@"; do
-    pid="$(plugin_for_script "$INSTALL_DIR/$target")" || pid=""
+    pid="$(plugin_for_script "$INSTALL_DIR/$target" "$SCRIPTS_SRC/$target")" || pid=""
     if [[ -z "$pid" ]]; then
       info "$target: no genmon item to remove"
       continue

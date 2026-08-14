@@ -168,7 +168,11 @@ immediately, no restart required:
 2. **Apply** — a genmon item is registered and appended to the end of the
    panel, configured with `use-label` disabled and a period of `86400.00 s`.
    Each installed script gets exactly one item; repeated installs are
-   idempotent.
+   idempotent. An item is considered "already installed" when its command
+   matches the exact path **or** the same script name whose installed copy is
+   byte-identical (SHA-256) to the repo file — so switching `--target` paths,
+   or re-loading after an interrupted unload, reuses the existing item instead
+   of creating another one.
 3. **Verify + rollback** — every change is checked (item present, label
    hidden, period correct). If anything fails, the changes are rolled back
    automatically and the panel is left untouched.
@@ -222,6 +226,13 @@ If you prefer to wire the indicators yourself:
 - **Upgrade indicator shows nothing.** The apt package list has to contain
   `kali-linux-core` — run `sudo apt update` once. If the system is already on
   the newest release the indicator stays empty by design.
+- **Duplicate indicators appeared in the panel.** Most likely leftover genmon
+  items from an earlier install target path or an interrupted unload. Remove
+  them all with `./setup.sh unload --all`, then `./setup.sh load --all` to
+  rebuild. To remove by hand: **Panel → Panel Preferences → Items**, select
+  each extra **Generic Monitor** and press **Remove**. `load` will not
+  recreate them — it reuses items whose installed script is byte-identical,
+  so duplicates of the repo scripts are not created again.
 - **Trusting a stale panel backup.** Backups are kept alongside
   `xfce4-panel.xml` as `xfce4-panel.xml.bak-<timestamp>`. They are safe to
   delete once you are happy with a `load` / `--load`, and they are not used by the
