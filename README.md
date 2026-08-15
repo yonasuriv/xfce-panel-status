@@ -1,4 +1,33 @@
-# Kali Panel Status Indicators (Xfce)
+<div align="center">
+
+<p>
+  <a href="docs/architecture/overview.md"><img src="https://img.shields.io/badge/TARGET-KALI-blue" /></a>
+  <a href="https://github.com/avtobot/avtobot/actions"><img src="https://img.shields.io/badge/DE-XFCE-yellow" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-green.svg" /></a>
+</p>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/logo-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset=".github/assets/logo-light.png">
+  <img src=".github/assets/logo-dark.png" alt="Kali XFCE+" width="460">
+</picture>
+
+<h3>Panel Status Indicators</h3>
+
+<picture>
+  <img src=".github/assets/system-update-upgrade.png" alt="Kali XFCE+" width="">
+</picture>
+
+_Let's give XFCE the love it deserves (and Kali, of course ❤️)_
+
+</div>
+
+---
+
+> **Note:** These scripts are tailored for Kali Linux. Ensure that your system is running Kali or adjust the scripts as needed. \
+> See other distributions below.
+
+# Kali Panel Status Indicators (XFCE)
 
 Lightweight status indicators for the Xfce panel that surface two things on a
 Kali Linux system: how many package updates are pending, and whether a newer
@@ -8,7 +37,7 @@ Built for the Xfce **Generic Monitor** (`genmon`) plugin. Both scripts print
 nothing when there is nothing to report, so the panel stays clean when the
 system is up to date.
 
-![Updates Notification](https://github.com/user-attachments/assets/9b606657-1d48-48eb-b2f0-c2bba2e48508)
+<!-- ![Updates Notification](https://github.com/user-attachments/assets/9b606657-1d48-48eb-b2f0-c2bba2e48508) -->
 
 ## Repository layout
 
@@ -44,7 +73,7 @@ to `86400.00 s` (24 h), and refreshes them immediately so their output is
 visible at once. Repeated runs are safe: existing items are reused, never
 duplicated.
 
-## Other distributions (untested)
+## Other distributions
 
 This project is written **for Kali Linux**, and **no other distribution has been
 tested**. The two stock scripts only perform **Debian-family commands** (`apt`,
