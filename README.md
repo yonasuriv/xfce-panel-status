@@ -1,8 +1,8 @@
 <div align="center">
 
 <p>
-  <a href="docs/architecture/overview.md"><img src="https://img.shields.io/badge/TARGET-KALI-blue" /></a>
-  <a href="https://github.com/avtobot/avtobot/actions"><img src="https://img.shields.io/badge/DE-XFCE-yellow" /></a>
+  <a href="README.md"><img src="https://img.shields.io/badge/TARGET-KALI-blue" /></a>
+  <a href="https://github.com/yonasuriv/xfce-panel-status/actions"><img src="https://img.shields.io/badge/DE-XFCE-yellow" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/LICENSE-MIT-green.svg" /></a>
 </p>
 
@@ -25,19 +25,17 @@ _Let's give XFCE the love it deserves (and Kali, of course ❤️)_
 ---
 
 > **Note:** These scripts are tailored for Kali Linux. \
-> However, you are more than welcome to adjust the scripts as needed and/or upload yours. See other distributions below.
+> You are welcome to adjust them as needed and/or upload your own. See "Other distributions" below.
 
 # Kali Panel Status Indicators (XFCE)
 
-Lightweight status indicators for the Xfce panel that surface two things on a
-Kali Linux system: how many package updates are pending, and whether a newer
-Kali release is available.
+Two tiny genmon scripts that keep an eye on your Kali system from the Xfce panel.
+One counts the package updates waiting to be installed. The other tells you when
+a newer Kali release is out. When there is nothing to report, they print nothing,
+so your panel stays clean when the system is up to date.
 
-Built for the Xfce **Generic Monitor** (`genmon`) plugin. Both scripts print
-nothing when there is nothing to report, so the panel stays clean when the
-system is up to date.
-
-<!-- ![Updates Notification](https://github.com/user-attachments/assets/9b606657-1d48-48eb-b2f0-c2bba2e48508) -->
+Both use the **Generic Monitor** (`genmon`) plugin, which ships with Kali's
+default Xfce panel.
 
 ## Repository layout
 
@@ -52,13 +50,14 @@ system is up to date.
 
 ## Requirements
 
-- **Kali Linux** (scripts refuse to run on other distributions).
-- **Xfce panel** with the **`xfce4-genmon-plugin`** package installed — it
-  ships with Kali's default Xfce panel, so nothing to install here (see
-  *Other distributions* for installing it elsewhere).
-- **`sudo`** access — the scripts are installed into
-  `/usr/share/kali-themes/` (root-owned). `--load` / `--unload` modify only
-  your own user configuration and need no privileges.
+- **Kali Linux.** The scripts check `/etc/os-release` and refuse to run on
+  other distributions.
+- **Xfce panel** with **`xfce4-genmon-plugin`** installed. On Kali this ships
+  with the default panel, so nothing to install (see *Other distributions*
+  for installing it elsewhere).
+- **`sudo` access.** The scripts are installed into
+  `/usr/share/kali-themes/`, which is owned by root. The `load`/`unload`
+  commands only touch your own user configuration and need no privileges.
 
 ## Quick start
 
@@ -66,32 +65,29 @@ system is up to date.
 ./setup.sh install --all --load
 ```
 
-Installs both scripts (into `/usr/share/kali-themes/`, using `sudo`
-automatically — it only prompts when privileges are actually needed), wires
-both indicators to the end of the panel, disables the label, sets the period
-to `86400.00 s` (24 h), and refreshes them immediately so their output is
-visible at once. Repeated runs are safe: existing items are reused, never
-duplicated.
+That one command does everything: it copies both scripts to
+`/usr/share/kali-themes/` (using `sudo` automatically, and only when it
+actually needs to), adds both indicators at the end of your panel, hides the
+label, sets the refresh period to `86400.00 s` (24 hours) and forces them to
+render right away. You can run it again as often as you like; existing items
+are reused, never duplicated.
 
 ## Other distributions
 
-This project is written **for Kali Linux**, and **no other distribution has been
-tested**. The two stock scripts only perform **Debian-family commands** (`apt`,
-`sudo -n apt-get update`, `apt show`), and each one reads `/etc/os-release` and
-exits silently unless `ID=kali` — so on any other distro they will either run
+This project is written **for Kali Linux**, and **no other distribution has
+been tested**. The two scripts only run Debian-family commands (`apt`,
+`sudo -n apt-get update`, `apt show`), and each one checks `/etc/os-release`
+and exits silently unless `ID=kali`. On any other distro they will either run
 the wrong commands or stay blank on purpose. Using `setup.sh` elsewhere means
 **editing the scripts manually** for your package manager and your distro's
-`ID` (or adding your own genmon scripts to `kali-themes/`); the panel wiring
-itself is plain Xfce `xfconf` and works as long as a `genmon` plugin exists.
+`ID`, or adding your own genmon scripts to `kali-themes/`. The panel wiring
+itself is plain Xfce `xfconf`, so it works as long as a `genmon` plugin exists.
 
-- **Installing `xfce4-genmon-plugin` on another distro** — see
-  [almaceleste's xfce4-genmon-scripts](https://almaceleste.github.io/xfce4-genmon-scripts/)
-  (it covers installation and examples for several distributions).
-- **Looking for more genmon scripts** — see
+- **Installing `xfce4-genmon-plugin` on another distro.** See
+  [almaceleste's xfce4-genmon-scripts](https://almaceleste.github.io/xfce4-genmon-scripts/),
+  which covers installation and examples for several distributions.
+- **Looking for more genmon scripts.** See
   [xtonousou/xfce4-genmon-scripts](https://github.com/xtonousou/xfce4-genmon-scripts).
-
-On Kali the `genmon` plugin ships with the default Xfce panel, so no extra
-package is required.
 
 ## Commands
 
@@ -99,8 +95,8 @@ package is required.
 | ------------ | ---------------------------------------------------------------------------- |
 | `install`    | Copies the selected script(s) from `kali-themes/` to `/usr/share/kali-themes/`, makes them executable (`chmod 755`) and applies the standard genmon settings where applicable. |
 | `uninstall`  | Removes the selected script(s) from `/usr/share/kali-themes/`.               |
-| `load`       | Wires genmon item(s) into the Xfce panel **only** — no file changes.         |
-| `unload`     | Removes the matching genmon item(s) from the panel **only** — no file changes. |
+| `load`       | Wires genmon item(s) into the Xfce panel only. No file changes.              |
+| `unload`     | Removes the matching genmon item(s) from the panel only. No file changes.    |
 
 ### Options
 
@@ -127,7 +123,7 @@ package is required.
 # Install both indicators and wire them into the panel
 ./setup.sh install --all --load
 
-# Scripts already installed manually — just wire (or re-wire) the panel
+# Scripts already installed manually; just wire (or re-wire) the panel
 ./setup.sh load --all
 
 # Unwire the panel without deleting the scripts
@@ -142,7 +138,7 @@ package is required.
 
 ## Scripts
 
-### `xfce4-panel-update.sh` — pending updates
+### `xfce4-panel-update.sh` (pending updates)
 
 Refreshes the package cache with `sudo -n apt-get update` and counts the
 upgradable packages. Prints the count only when it is greater than zero, e.g.:
@@ -153,12 +149,12 @@ upgradable packages. Prints the count only when it is greater than zero, e.g.:
 
 Requires passwordless `sudo` for `apt-get update` (see Troubleshooting).
 
-### `xfce4-panel-upgrade.sh` — newer release available
+### `xfce4-panel-upgrade.sh` (newer release available)
 
-Kali is a rolling release; the current version is read from
-`/etc/os-release` (`VERSION_ID`) and the newest available release from the apt
-package index (`kali-linux-core`). **No website is scraped.** When a newer
-release exists it prints, e.g.:
+Kali is a rolling release. The current version is read from `/etc/os-release`
+(`VERSION_ID`) and the newest available release from the apt package index
+(`kali-linux-core`). **No website is scraped.** When a newer release exists it
+prints, e.g.:
 
 ```
 Kali 2026.3.0 available (2026.1)
@@ -166,33 +162,33 @@ Kali 2026.3.0 available (2026.1)
 
 ## Panel wiring and safety
 
-`load` / `unload` (or the `--load` / `--unload` shortcuts) configure the
-panel **live** through Xfce's own configuration system (`xfconf`, config
-version 2) — the same mechanism the panel itself uses — so changes apply
-immediately, no restart required:
+`load`/`unload` (or the `--load`/`--unload` shortcuts) change the panel live
+through xfconf (config version 2), the same configuration system the panel
+itself uses. Changes apply immediately, no restart required. To keep your panel
+safe it does the following:
 
-1. **Backup** — the panel configuration (`xfce4-panel.xml`) is snapshotted
-   before any change.
-2. **Apply** — a genmon item is registered and appended to the end of the
-   panel, configured with `use-label` disabled and a period of `86400.00 s`.
-   Each installed script gets exactly one item; repeated installs are
-   idempotent. An item is considered "already installed" when its command
-   matches the exact path **or** the same script name whose installed copy is
-   byte-identical (SHA-256) to the repo file — so switching `--target` paths,
-   or re-loading after an interrupted unload, reuses the existing item instead
-   of creating another one.
-3. **Verify + rollback** — every change is checked (item present, label
-   hidden, period correct). If anything fails, the changes are rolled back
+1. **Back up.** The panel configuration (`xfce4-panel.xml`) is snapshotted
+   before anything changes.
+2. **Apply.** A genmon item is created and appended to the end of the panel,
+   with the label disabled and a period of `86400.00 s`. Each installed script
+   gets exactly one item and repeated installs are idempotent. An item counts
+   as already installed when its command matches the exact path, or when the
+   same script name has an installed copy that is byte-identical (SHA-256) to
+   the repo file. So switching `--target` paths, or re-loading after an
+   interrupted unload, reuses the existing item instead of creating a second
+   one.
+3. **Verify and roll back.** Every change is checked afterwards (item present,
+   label hidden, period correct). If anything fails, the changes are reverted
    automatically and the panel is left untouched.
-4. **Refresh** — freshly loaded items are forced to render immediately: the
-   script tries a per-item refresh event and, if the panel ignores it, does a
-   graceful panel restart so the output appears at once instead of waiting for
-   the next period. Items removed from the panel by hand are re-created on the
-   next `load`.
+4. **Refresh.** Newly loaded items are forced to render immediately. It first
+   tries a per-item refresh event, and if the panel ignores it, does a graceful
+   panel restart so the output shows up at once instead of waiting for the next
+   period. Items you removed from the panel by hand are re-created on the next
+   `load`.
 
 On panel configurations that are not `xfconf`-based (old config version 1),
-`load`/`unload` refuse to touch anything, print a warning and leave the
-scripts installed. Configure the items manually in that case (see below).
+`load`/`unload` refuse to touch anything, print a warning and leave the scripts
+installed. Configure the items manually in that case (see below).
 
 ## Manual configuration (no `load`)
 
@@ -220,31 +216,30 @@ If you prefer to wire the indicators yourself:
   executable (`ls -l /usr/share/kali-themes/`) and that a genmon item in the
   panel points at it.
 - **`sudo` password prompt / permission denied during `install`.**
-  `/usr/share/kali-themes/` is root-owned. Run `setup.sh` with `sudo`, or
+  `/usr/share/kali-themes/` is owned by root. Run `setup.sh` with `sudo`, or
   install to your own directory with
   `KALI_THEMES_INSTALL_DIR=~/bin ./setup.sh install --all`.
 - **Built with `sudo`, panel wiring was skipped.** Running `sudo ./setup.sh`
-  is supported: the installer resolves the original user's configuration and
+  is supported. The installer resolves the original user's configuration and
   session bus, so `load`/`unload` work through `sudo` too. If it still skips,
-  the panel must use `xfconf` (config version 2) — for older Xfce versions,
+  the panel must use `xfconf` (config version 2). For older Xfce versions,
   add the items manually.
-- **Updates indicator refreshes but shows nothing.** Check the sudoers
-  rule for apt: `/etc/sudoers.d/` must allow `apt-get update` (and only that)
+- **Updates indicator refreshes but shows nothing.** Check the sudoers rule
+  for apt. `/etc/sudoers.d/` must allow `apt-get update` (and only that)
   without a password.
 - **Upgrade indicator shows nothing.** The apt package list has to contain
-  `kali-linux-core` — run `sudo apt update` once. If the system is already on
+  `kali-linux-core`. Run `sudo apt update` once. If the system is already on
   the newest release the indicator stays empty by design.
 - **Duplicate indicators appeared in the panel.** Most likely leftover genmon
   items from an earlier install target path or an interrupted unload. Remove
   them all with `./setup.sh unload --all`, then `./setup.sh load --all` to
   rebuild. To remove by hand: **Panel → Panel Preferences → Items**, select
-  each extra **Generic Monitor** and press **Remove**. `load` will not
-  recreate them — it reuses items whose installed script is byte-identical,
-  so duplicates of the repo scripts are not created again.
-- **Trusting a stale panel backup.** Backups are kept alongside
-  `xfce4-panel.xml` as `xfce4-panel.xml.bak-<timestamp>`. They are safe to
-  delete once you are happy with a `load` / `--load`, and they are not used by the
-  panel itself.
+  each extra **Generic Monitor** and press **Remove**. `load` will not recreate
+  them; it reuses items whose installed script is byte-identical, so
+  duplicates of the repo scripts are not created again.
+- **Stale panel backups.** Backups are kept alongside `xfce4-panel.xml` as
+  `xfce4-panel.xml.bak-<timestamp>`. They are safe to delete once you are
+  happy with a `load` / `--load`, and they are not used by the panel itself.
 
 ## License
 

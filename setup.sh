@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# setup.sh — install / uninstall the Kali panel-status scripts and, optionally,
+# setup.sh - install / uninstall the Kali panel-status scripts and, optionally,
 # wire them into the running Xfce panel as genmon (Generic Monitor) items.
 #
 # Usage:
@@ -101,7 +101,7 @@ xconf() {
       sudo -u "$u" -H XDG_RUNTIME_DIR="/run/user/$uid" \
         DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" xfconf-query "$@"
     else
-      warn "No session bus for user '$u' at /run/user/$uid/bus — panel skipped"
+      warn "No session bus for user '$u' at /run/user/$uid/bus; panel skipped"
       return 1
     fi
   else
@@ -388,7 +388,7 @@ panel_load() { # script names to load
   fi
 
   if ((${#appended[@]})); then
-    info "Loaded ${#appended[@]} genmon item(s) into $panel — settings applied:"
+    info "Loaded ${#appended[@]} genmon item(s) into $panel; settings applied:"
     info "  command         $INSTALL_DIR/<script>"
     info "  use-label       false"
     info "  update-period   86400.00 s (24 h)"
