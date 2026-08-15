@@ -23,10 +23,14 @@ latest_version=$(apt show kali-linux-core 2>/dev/null \
 # If the version could not be determined, show nothing.
 [ -z "$latest_version" ] && exit 0
 
+# Compare release series only: the kali-linux-core package version may carry
+# an in-release point bump (e.g. 2026.3.2), which is not a new release.
+latest_release=${latest_version%.*}
+
 # Notify only when a newer release is available.
-if [ "$latest_version" != "$current_version" ]; then
+if [ "$latest_release" != "$current_version" ]; then
     printf "<icon>update-high</icon> "
-    printf "<txt>Kali %s available (%s)</txt>" "$latest_version" "$current_version"
+    printf "<txt>Kali %s available (%s)</txt>" "$latest_release" "$current_version"
 else
     printf "<txt></txt>"
 fi
