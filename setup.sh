@@ -132,7 +132,20 @@ xset_arr() { # property v1 v2 ...
   xconf "${args[@]}" >/dev/null 2>&1
 }
 
-xreset()   { xconf -c "$XFCONF_CHANNEL" -p "$1" -r -R >/dev/null 2>&1 || true; }
+# Reset a property subtree recursively.  A single reset is not enough: the
+# running panel can rewrite the plugin's own properties (e.g. `command`)
+# during widget teardown, racing the reset.  Retry until the subtree is truly
+# empty, so no stale values survive an unload.
+xreset() {
+  local p="$1" attempt
+  for attempt in 1 2 3; do
+    xconf -c "$XFCONF_CHANNEL" -p "$p" -r -R >/dev/null 2>&1 || true
+    [[ -z "$(xget "$p")" && -z "$(xget "$p/command")" ]] && return 0
+    sleep 0.25
+  done
+  warn "Could not fully reset $p"
+  return 1
+}
 
 # ---------------------------------------------------------------------------
 # selection of scripts (auto-read from ./kali-themes)
@@ -428,7 +441,7 @@ panel_unload() {
     for p in $(xget_arr "/panels" | sed 's/^panel-//'); do
       panel_remove "panel-$p" "$pid" && removed_any=1
     done
-    xreset "/plugins/plugin-$pid"
+    xreset "/plugins/plugin-$pid" || true
     info "Unloaded $target (genmon item $pid removed)"
   done
 
@@ -448,7 +461,21 @@ panel_unload() {
     warn "Re-run './setup.sh unload ${*@Q}' to re-synchronize, then verify the panel."
   fi
 
-  [[ "$removed_any" == "1" ]] && info "Unloaded from the panel; items take effect immediately."
+  # a live panel occasionally keeps a widget on screen and re-writes the
+  # plugin's properties (e.g. `command`) during teardown.  Restart the panel
+  # to flush it, then reset the subtree again so the reset finally sticks and
+  # no stale command survives in the config.
+  if [[ "$removed_any" == "1" ]]; then
+    if xfce4-panel --restart >/dev/null 2>&1; then
+      info "Restarted the panel so removed items vanish immediately."
+    else
+      warn "Could not restart the panel; removed items may linger until it restarts."
+    fi
+    for pid in "${unloaded[@]}"; do
+      xreset "/plugins/plugin-$pid" || true
+    done
+    info "Unloaded from the panel; items take effect immediately."
+  fi
 }
 
 found_on_any_panel() { # plugin-id
