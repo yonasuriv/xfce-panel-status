@@ -24,8 +24,8 @@ _Let's give XFCE the love it deserves (and Kali, of course ❤️)_
 
 ---
 
-> **Note:** These scripts are tailored for Kali Linux. Ensure that your system is running Kali or adjust the scripts as needed. \
-> See other distributions below.
+> **Note:** These scripts are tailored for Kali Linux. \
+> However, you are more than welcome to adjust the scripts as needed and/or upload yours. See other distributions below.
 
 # Kali Panel Status Indicators (XFCE)
 
