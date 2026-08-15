@@ -24,9 +24,9 @@ system is up to date.
 ## Requirements
 
 - **Kali Linux** (scripts refuse to run on other distributions).
-- **Xfce panel** with the **`xfce4-genmon-plugin`** package installed (it is
-  *not* part of a default Xfce install — see *Installing on another
-  distribution* for the per-distro command).
+- **Xfce panel** with the **`xfce4-genmon-plugin`** package installed — it
+  ships with Kali's default Xfce panel, so nothing to install here (see
+  *Other distributions* for installing it elsewhere).
 - **`sudo`** access — the scripts are installed into
   `/usr/share/kali-themes/` (root-owned). `--load` / `--unload` modify only
   your own user configuration and need no privileges.
@@ -44,46 +44,25 @@ to `86400.00 s` (24 h), and refreshes them immediately so their output is
 visible at once. Repeated runs are safe: existing items are reused, never
 duplicated.
 
-## Installing on another distribution
+## Other distributions (untested)
 
-The **panel wiring** (`setup.sh`, `load`/`unload`) works on **any** Xfce
-desktop — it only talks to `xfconf`, `xfce4-panel` and the **Generic Monitor**
-plugin. The **two stock scripts, however, are Kali-only by design**: each one
-reads `/etc/os-release` and exits silently unless `ID=kali`, so on another
-distro they stay blank on purpose (they would otherwise report wrong version
-numbers or apt state). Deploying the harness elsewhere is still useful when
-you **fork the scripts** for your distro, or add your own genmon scripts to
-`kali-themes/`.
+This project is written **for Kali Linux**, and **no other distribution has been
+tested**. The two stock scripts only perform **Debian-family commands** (`apt`,
+`sudo -n apt-get update`, `apt show`), and each one reads `/etc/os-release` and
+exits silently unless `ID=kali` — so on any other distro they will either run
+the wrong commands or stay blank on purpose. Using `setup.sh` elsewhere means
+**editing the scripts manually** for your package manager and your distro's
+`ID` (or adding your own genmon scripts to `kali-themes/`); the panel wiring
+itself is plain Xfce `xfconf` and works as long as a `genmon` plugin exists.
 
-Every system needs a working Xfce panel plus the **genmon** plugin — which is
-**not** part of a default Xfce install. Pick your distribution:
+- **Installing `xfce4-genmon-plugin` on another distro** — see
+  [almaceleste's xfce4-genmon-scripts](https://almaceleste.github.io/xfce4-genmon-scripts/)
+  (it covers installation and examples for several distributions).
+- **Looking for more genmon scripts** — see
+  [xtonousou/xfce4-genmon-scripts](https://github.com/xtonousou/xfce4-genmon-scripts).
 
-```bash
-# Debian, Ubuntu and other .deb-based distributions
-sudo apt install xfce4-panel xfce4-genmon-plugin
-
-# Fedora / RHEL-family
-sudo dnf install xfce4-panel xfce4-genmon-plugin
-
-# openSUSE
-sudo zypper install xfce4-panel xfce4-genmon-plugin
-
-# Some other RPM-based distributions (no dependency resolution)
-sudo rpm --install xfce4-panel xfce4-genmon-plugin
-```
-
-> `rpm --install` does **not** fetch or resolve dependencies — it works only
-> with local `.rpm` files. On RPM distros prefer the front-end above
-> (`dnf`, `zypper`) so the required dependencies are pulled in automatically.
-
-Once the plugin exists, install into the directory you prefer with `--target`
-(no `sudo` needed for a user-writable path) and wire the panel:
-
-```bash
-./setup.sh install --all --target ~/bin --load
-# or, once your own scripts live in kali-themes/:
-./setup.sh install --all --load
-```
+On Kali the `genmon` plugin ships with the default Xfce panel, so no extra
+package is required.
 
 ## Commands
 
